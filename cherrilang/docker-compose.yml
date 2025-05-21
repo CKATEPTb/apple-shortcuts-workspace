@@ -1,0 +1,35 @@
+services:
+  cherrilang:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: cherrilang
+    working_dir: /home
+    volumes:
+      - ./core:/home/core
+      - ./dist:/home/dist
+      - ./../workspace:/home/workspace
+    entrypoint: bash
+    command: >
+      -c "
+        if [ ! -f /home/core/.initialized ]; then
+          git clone https://github.com/electrikmilk/cherri.git /home/core
+          touch /home/core/.initialized
+        fi
+        if [ ! -f /home/core/cherri ]; then
+          cd /home/core
+          go build -o /home/core/cherri
+        fi
+        cd /home/workspace/\$SHORTCUT/
+        rm -rf ./dist
+        mkdir -p ./dist
+        /home/core/cherri --skip-sign ./index.cherri && \
+          mv ./Template_unsigned.shortcut ./dist/unsigned.shortcut && \
+          chmod 777 ./dist/unsigned.shortcut && \
+          echo 'Build succeeded. Signing...' && \
+          curl -X POST -F "shortcutName=\$SHORTCUT" -F "shortcut=@./dist/unsigned.shortcut" https://hubsign.routinehub.services/sign --output ./dist/$SHORTCUT.shortcut && \
+          echo 'Signed shortcut saved to ./dist/\$SHORTCUT.shortcut' && \
+          exit 0
+        echo 'Build failed';
+        exit 1
+      "
