@@ -24,7 +24,7 @@ services:
         rm -rf ./dist
         mkdir -p ./dist
         /home/core/cherri --skip-sign ./index.cherri && \
-          mv ./Template_unsigned.shortcut ./dist/unsigned.shortcut && \
+          mv ./\$SHORTCUT\_unsigned.shortcut ./dist/unsigned.shortcut && \
           chmod 777 ./dist/unsigned.shortcut && \
           echo 'Build succeeded. Signing...' && \
           curl -X POST -F "shortcutName=\$SHORTCUT" -F "shortcut=@./dist/unsigned.shortcut" https://hubsign.routinehub.services/sign --output ./dist/$SHORTCUT.shortcut && \
