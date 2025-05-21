@@ -50,7 +50,7 @@ workspace/                     ← Root directory for jellycuts-based shortcut p
    After successful compilation and signing, the final output will appear in:
     ```pgsql
     ./dist/
-    ├── unsigned.shortcut          ← Raw (unsigned) shortcut
+    ├── [name].xml          ← Raw (unsigned) shortcut
     └── [name].shortcut            ← Signed, ready-to-import shortcut
     ```
 
