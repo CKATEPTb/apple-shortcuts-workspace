@@ -1,0 +1,4 @@
+import Shortcuts
+#Color: red, #Icon: circledHeart
+
+text(text: "Hello, World!") >> text

@@ -1,0 +1,38 @@
+services:
+  jellycore:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: jellycore
+    working_dir: /home
+    volumes:
+      - ./core:/home/core
+      - ./dist:/home/dist
+      - ./../workspace:/home/workspace
+    entrypoint: bash
+    command: >
+      -c "
+        if [ ! -f /home/core/.initialized ]; then
+          git clone https://github.com/OpenJelly/Open-Jellycore.git /home/core
+          cd /home/core
+          touch /home/core/.initialized
+        fi
+        if [ ! -f /home/core/.build/release/jelly ]; then
+          touch /home/core/.initialized
+          cd /home/core/resources
+          swift build -c release
+        fi
+        rm -rf /home/dist/unsigned.shortcut
+        /home/core/.build/release/jelly /home/workspace/\$SHORTCUT/index.jelly --export --out /home/dist/unsigned.shortcut
+        if [ ! -f /home/dist/unsigned.shortcut ]; then
+          echo 'Build failed';
+          exit 1;
+        fi
+        echo 'Build succeeded. Signing...'
+        curl -X POST -F "shortcutName=\$SHORTCUT" -F "shortcut=@/home/dist/unsigned.shortcut" https://hubsign.routinehub.services/sign --output /home/dist/signed.shortcut
+        rm -rf /home/workspace/\$SHORTCUT/dist/
+        mkdir /home/workspace/\$SHORTCUT/dist/
+        cp /home/dist/unsigned.shortcut /home/workspace/\$SHORTCUT/dist/\$SHORTCUT.xml
+        cp /home/dist/signed.shortcut /home/workspace/\$SHORTCUT/dist/\$SHORTCUT.shortcut
+        echo 'Signed shortcut saved to ./dist/\$SHORTCUT.shortcut'
+      "

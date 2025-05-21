@@ -1,0 +1,15 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Build shortcut via jellycore",
+            "type": "shell",
+//            "command": "flatpak-spawn --host ./build.sh", // TODO: UNCOMMENT this line if vscode is running under flatpak or delete this line
+            "command": "./build.sh", // TODO: COMMENT this line if vscode is running under flatpak or delete this comment
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        }
+    ]
+}
